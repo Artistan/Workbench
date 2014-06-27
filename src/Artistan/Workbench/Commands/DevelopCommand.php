@@ -55,6 +55,7 @@ class DevelopCommand extends Command {
             $this->benchhelper->exec('php artisan config:publish --path="workbench/artistan/workbench/src/config" artistan/workbench');
             echo "update configs in app/config/packages/artistan/workbench/config.php\n";
         }
+        $this->benchhelper->composerVendorCleanup(['artistan/workbench']);
 
         $this->benchhelper->composer('artistan/workbench','update');
         $this->benchhelper->composer();

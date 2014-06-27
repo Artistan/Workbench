@@ -3,6 +3,7 @@
 use Illuminate\Support\ServiceProvider;
 use Artistan\Workbench\Commands\InstallCommand;
 use Artistan\Workbench\Commands\DevelopCommand;
+use Artistan\Workbench\Commands\LaunchCommand;
 
 class WorkbenchServiceProvider extends ServiceProvider {
 
@@ -48,21 +49,34 @@ class WorkbenchServiceProvider extends ServiceProvider {
 
     private function registerCommands()
     {
-        /**
-         *
-         */
-        $this->app['artistan.workbench.install'] = $this->app->share(function($app)
-        {
-            return new InstallCommand();
-        });
-        $this->commands('artistan.workbench.install');
-        /**
-         *
-         */
-        $this->app['artistan.workbench.develop'] = $this->app->share(function($app)
-        {
-            return new DevelopCommand();
-        });
-        $this->commands('artistan.workbench.develop');
+        try{
+            /**
+             *
+             */
+            $this->app['artistan.workbench.install'] = $this->app->share(function($app)
+            {
+                return new InstallCommand();
+            });
+            $this->commands('artistan.workbench.install');
+            /**
+             *
+             */
+            $this->app['artistan.workbench.develop'] = $this->app->share(function($app)
+            {
+                return new DevelopCommand();
+            });
+            $this->commands('artistan.workbench.develop');
+            /**
+             *
+             */
+            $this->app['artistan.workbench.launch'] = $this->app->share(function($app)
+            {
+                return new LaunchCommand();
+            });
+            $this->commands('artistan.workbench.launch');
+        } catch(\Exception $e) {
+            echo "Exception in registerCommands.\nDid you forget to set the 'use' statement?\n";
+            echo $e->getMessage()."\n";
+        }
     }
 }

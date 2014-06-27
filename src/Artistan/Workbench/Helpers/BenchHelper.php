@@ -35,7 +35,7 @@ class BenchHelper {
                 return mkdir(base_path().'/workbench/'.$name,0777,true);
             }
         } else {
-            throw new Exception('No Git Repo Name Set');
+            $this->error('No Git Repo Name Set');
         }
     }
 
@@ -52,7 +52,7 @@ class BenchHelper {
                 echo shell_exec('composer '.$action.' --no-dev');
                 echo shell_exec('composer dump-autoload');
             } else {
-                throw new Exception('Package does not exist');
+                $this->error('Package does not exist');
             }
         } else {
             chdir(base_path());
@@ -90,7 +90,7 @@ class BenchHelper {
                     echo "No bower.json to install";
                 }
             } else {
-                throw new Exception('Package does not exist');
+                $this->error('Package does not exist');
             }
         } else {
             chdir(base_path());
@@ -118,12 +118,12 @@ class BenchHelper {
                 // git clone
                 $this->exec('git clone '.$package['git'].' .');
                 if(!is_dir('.git')){
-                    throw new Exception('getGit Failed to get git');
+                    $this->error('getGit Failed to get git');
                 }
                 return 'install';
             }
         } else {
-            throw new Exception('No Git Repo Set');
+            $this->error('No Git Repo Set');
         }
     }
 
@@ -147,13 +147,13 @@ class BenchHelper {
                     }
 
                 } else {
-                    throw new Exception('git repo does not exist in '.base_path().'/workbench/'.$name);
+                    $this->error('git repo does not exist in '.base_path().'/workbench/'.$name);
                 }
             } else {
-                throw new Exception('No Git Upstream Set');
+                $this->error('No Git Upstream Set');
             }
         } else {
-            throw new Exception('No Git Repo Set');
+            $this->error('No Git Repo Set');
         }
     }
 
@@ -182,6 +182,13 @@ class BenchHelper {
                 echo $s."\n";
                 flush();
             }
+        }
+    }
+
+    public function error($message,$exit=false){
+        echo $message."\n";
+        if($exit){
+            exit;
         }
     }
 }

@@ -50,9 +50,9 @@ class InstallCommand extends Command {
         $this->benchhelper->chStorage();
         $packages = \Config::get('workbench::packages');
         if($this->option('destroy')){
-            if ($this->confirm('Are you sure you want to remove all current workbench packages? [yes|no]'))
+            if($this->confirm('Are you sure you want to remove all configured workbench packages? [yes|no]'))
             {
-                $this->benchhelper->destroy();
+                $this->benchhelper->destroy(array_keys($packages));
             }
         }
         foreach($packages as $name=>$package){
@@ -70,9 +70,8 @@ class InstallCommand extends Command {
                 if(!$this->option('skipComposer')){
                     $this->benchhelper->composer($name,$action);
                 }
-                if(!$this->option('skipPublish')){
+                if(!$this->option('skipAssets')){
                     $this->call('asset:publish', array('--bench' => $name));
-                    $this->call('view:publish', array('--bench' => $name));
                 }
                 if($this->option('publishConfigs') || $action=='install'){
                     // this should not be done all the time, first time only (install)
@@ -117,7 +116,7 @@ class InstallCommand extends Command {
             array('merge','m', InputOption::VALUE_OPTIONAL, 'Merge upstream into this branch.'),
             array('skipComposer','c', InputOption::VALUE_NONE, 'skip composer install/update'),
             array('skipBower','b', InputOption::VALUE_NONE, 'skip bower install/update'),
-            array('skipPublish','p', InputOption::VALUE_NONE, 'skip publishing stuff from workbench'),
+            array('skipAssets','a', InputOption::VALUE_NONE, 'skip publishing assets from workbench'),
             array('publishConfigs','i', InputOption::VALUE_NONE, 're-publish the config files'),
         );
     }
