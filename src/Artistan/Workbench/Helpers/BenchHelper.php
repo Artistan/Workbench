@@ -5,9 +5,14 @@ class BenchHelper {
     /**
      * destroys all workbench packages
      */
-    public function destroy() {
-        echo "removing all workbench\n";
-        $this->exec('rm -rf '.base_path().'/workbench');
+    public function destroy($packages) {
+        echo "removing all configured packages\n";
+        foreach($packages as $name){
+            // check if exists, also do not remove artistan/workbench cause I am working on it!!!
+            if(is_dir(base_path().'/workbench/'.$name) && $name!='artistan/workbench'){
+                $this->exec('rm -rf '.base_path().'/workbench/'.$name);
+            }
+        }
     }
 
     public function chStorage(){
@@ -57,13 +62,15 @@ class BenchHelper {
     }
 
     /**
+     * do not want to be working on package that is installed via composer.
+     *
      * @param $packages
      */
     public function composerVendorCleanup($packages) {
         echo "composerVendorCleanup\n";
         foreach($packages as $name){
             if(is_dir(base_path().'/vendor/'.$name)){
-                $this->exec('chmod -R 0777 app/storage');
+                $this->exec('rm -rf '.base_path().'/vendor/'.$name);
             }
         }
     }
