@@ -1,6 +1,10 @@
 {
     "name": "artistan/workbench",
     "description": "adds configurable workbench management commands to laravel",
+    "keywords": ["artistan", "workbench", "helpers", "laravel", "laravel4"],
+    "license": [
+        "GPL-3.0+"
+    ],
     "authors": [
         {
             "name": "Artistan (Charles Peterson)",
