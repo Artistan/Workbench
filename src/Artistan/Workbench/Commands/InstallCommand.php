@@ -20,7 +20,7 @@ class InstallCommand extends Command {
      *
      * @var string
      */
-    protected $description = 'Command description.';
+    protected $description = 'Install the currently configured packages from artistan/workspace config.';
 
     /**
      * workbench helper class

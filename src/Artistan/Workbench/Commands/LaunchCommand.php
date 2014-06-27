@@ -20,7 +20,7 @@ class LaunchCommand extends Command {
      *
      * @var string
      */
-    protected $description = 'Command description.';
+    protected $description = 'This will publish assets & configs. Optionally publish views.';
 
     /**
      * workbench helper class

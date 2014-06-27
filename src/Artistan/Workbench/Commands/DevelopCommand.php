@@ -20,7 +20,7 @@ class DevelopCommand extends Command {
      *
      * @var string
      */
-    protected $description = 'Command description.';
+    protected $description = 'Setup dev for artistan/workbench.';
 
     /**
      * workbench helper class
