@@ -1,10 +1,10 @@
 {
     "name": "artistan/workbench",
-    "description": "",
+    "description": "adds configurable workbench management commands to laravel",
     "authors": [
         {
-            "name": "Charles Peterson",
-            "email": "cpeterson@brokerbin.com"
+            "name": "Artistan (Charles Peterson)",
+            "email": "artistan@gmail.com"
         }
     ],
     "require": {
