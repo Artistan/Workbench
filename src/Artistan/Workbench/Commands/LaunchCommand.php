@@ -48,34 +48,22 @@ class LaunchCommand extends Command {
     public function fire()
     {
         echo "This will publish assets & configs.\n";
-        echo "Optionally publish views (-v).\n";
+        echo "Optionally publish views (-p).\n";
         if($this->confirm('Do you wish to launch your configured packages from vendors directory?'))
         {
             $this->benchhelper->chStorage();
             $packages = \Config::get('workbench::packages');
             foreach($packages as $name=>$package){
                 echo "--- $name ---\n";
-                try{
-                    $this->benchhelper->exec('php artisan config:publish '.$name);
-                    echo "published configs\n";
-                } catch(\Exception $e) {
-                    echo "Failed to publish configs.\n";
-                }
-                try{
-                    $this->benchhelper->exec('php artisan asset:publish '.$name);
-                    echo "published assets\n";
-                } catch(\Exception $e) {
-                    echo "Failed to publish assets.\n";
-                }
+                $this->benchhelper->exec('php artisan config:publish '.$name,false);
+                echo "published configs\n";
+                $this->benchhelper->exec('php artisan asset:publish '.$name,false);
+                echo "published assets\n";
                 if($this->option('publishViews')){
-                    try{
-                        $this->benchhelper->exec('php artisan view:publish '.$name);
-                        echo "published views\n";
-                    } catch(\Exception $e) {
-                        echo "Failed to publish views.\n";
-                    }
+                    $this->benchhelper->exec('php artisan view:publish '.$name,false);
+                    echo "published views\n";
                 } else {
-                    echo "skipping views\n";
+                    echo "skipping views (-p)\n";
                 }
             }
         }
@@ -103,7 +91,7 @@ class LaunchCommand extends Command {
     protected function getOptions()
     {
         return array(
-            array('publishViews','v', InputOption::VALUE_NONE, 'Publish the views also.'),
+            array('publishViews','p', InputOption::VALUE_NONE, 'Publish the views also.'),
         );
     }
 
