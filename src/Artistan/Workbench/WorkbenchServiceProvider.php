@@ -2,6 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 use Artistan\Workbench\Commands\InstallCommand;
+use Artistan\Workbench\Commands\DevelopCommand;
 
 class WorkbenchServiceProvider extends ServiceProvider {
 
@@ -55,5 +56,13 @@ class WorkbenchServiceProvider extends ServiceProvider {
             return new InstallCommand();
         });
         $this->commands('artistan.workbench.install');
+        /**
+         *
+         */
+        $this->app['artistan.workbench.develop'] = $this->app->share(function($app)
+        {
+            return new DevelopCommand();
+        });
+        $this->commands('artistan.workbench.develop');
     }
 }

@@ -27,7 +27,7 @@ class InstallCommand extends Command {
      *
      * @var Workbench
      */
-    protected $workbench = false;
+    protected $benchhelper = false;
 
     /**
      *
@@ -71,8 +71,12 @@ class InstallCommand extends Command {
                     $this->benchhelper->composer($name,$action);
                 }
                 if(!$this->option('skipPublish')){
-                    $this->call('config:publish', array('argument' => $name));
-                    $this->call('asset:publish', array('argument' => $name));
+                    $this->call('asset:publish', array('--bench' => $name));
+                    $this->call('view:publish', array('--bench' => $name));
+                }
+                if($this->option('publishConfigs') || $action=='install'){
+                    // this should not be done all the time, first time only (install)
+                    $this->call('config:publish', array('argument' => $name, '--path' => 'workbench/'.$name.'/src/config'));
                 }
             }
             echo "============================\n\n\n";
@@ -114,6 +118,7 @@ class InstallCommand extends Command {
             array('skipComposer','c', InputOption::VALUE_NONE, 'skip composer install/update'),
             array('skipBower','b', InputOption::VALUE_NONE, 'skip bower install/update'),
             array('skipPublish','p', InputOption::VALUE_NONE, 'skip publishing stuff from workbench'),
+            array('publishConfigs','i', InputOption::VALUE_NONE, 're-publish the config files'),
         );
     }
 
