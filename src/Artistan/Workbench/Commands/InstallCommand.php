@@ -47,10 +47,8 @@ class InstallCommand extends Command {
      */
     public function fire()
     {
-        echo "Artistan/Workbench\n";
-        exit;
         $this->chStorage();
-        $packages = \Config::get('workbench.packages');
+        $packages = \Config::get('workbench::packages');
         if($this->option('destroy')){
             if ($this->confirm('Are you sure you want to remove all current workbench packages? [yes|no]'))
             {
