@@ -57,6 +57,18 @@ class BenchHelper {
     }
 
     /**
+     * @param $packages
+     */
+    public function composerVendorCleanup($packages) {
+        echo "composerVendorCleanup\n";
+        foreach($packages as $name){
+            if(is_dir(base_path().'/vendor/'.$name)){
+                $this->exec('chmod -R 0777 app/storage');
+            }
+        }
+    }
+
+    /**
      * @param $name
      * @throws Exception
      */

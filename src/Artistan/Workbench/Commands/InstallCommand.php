@@ -37,7 +37,7 @@ class InstallCommand extends Command {
     public function __construct()
     {
         parent::__construct();
-        $this->workbench = new BenchHelper();
+        $this->benchhelper = new BenchHelper();
     }
 
     /**
@@ -47,28 +47,28 @@ class InstallCommand extends Command {
      */
     public function fire()
     {
-        $this->chStorage();
+        $this->benchhelper->chStorage();
         $packages = \Config::get('workbench::packages');
         if($this->option('destroy')){
             if ($this->confirm('Are you sure you want to remove all current workbench packages? [yes|no]'))
             {
-                $this->workbench->destroy();
+                $this->benchhelper->destroy();
             }
         }
         foreach($packages as $name=>$package){
             echo "PACKAGE: $name\n";
             if(isset($package['git'])){
-                $this->workbench->mkdir($name);
-                $action = $this->workbench->getGit($name,$package);
+                $this->benchhelper->mkdir($name);
+                $action = $this->benchhelper->getGit($name,$package);
                 if($this->option('upstream')){
                     echo "upstream\n";
-                    $this->workbench->getUpstream($name,$package,$this->option('merge'));
+                    $this->benchhelper->getUpstream($name,$package,$this->option('merge'));
                 }
                 if(!$this->option('skipBower')){
-                    $this->workbench->bower($name);
+                    $this->benchhelper->bower($name);
                 }
                 if(!$this->option('skipComposer')){
-                    $this->workbench->composer($name,$action);
+                    $this->benchhelper->composer($name,$action);
                 }
                 if(!$this->option('skipPublish')){
                     $this->call('config:publish', array('argument' => $name));
@@ -78,10 +78,12 @@ class InstallCommand extends Command {
             echo "============================\n\n\n";
         }
         if(!$this->option('skipBower')){
-            $this->workbench->bower();
+            $this->benchhelper->bower();
         }
         if(!$this->option('skipComposer')){
-            $this->workbench->composer();
+            $this->benchhelper->composer();
+            // remove any packages from vendors directory that you are workbenching
+            $this->benchhelper->composerVendorCleanup(array_keys($packages));
         }
         //$this->call('command:name', array('argument' => 'foo', '--option' => 'bar'));
     }
