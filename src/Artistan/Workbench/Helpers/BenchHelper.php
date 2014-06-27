@@ -127,41 +127,45 @@ class BenchHelper {
         }
     }
 
-    public function getUpstream($name,array $package,$merge){
-        echo "get git $name\n";
-        if(!empty($package['git'])){
-            if(!empty($package['upstream'])){
-                //$this->call('command:name', array('argument' => 'foo', '--option' => 'bar'));
-                chdir(base_path().'/workbench/'.$name);
-                if(is_dir('.git')){
-                    if(!$this->verifyUpstream($name)){
-                        $this->exec('git remote add upstream '.$package['upstream']);
-                    }
-                    if($this->verifyUpstream($name)){
-                        $this->exec('git fetch upstream');
-                        if($merge){
-                            $this->exec('git merge upstream/'.$merge);
-                        } else {
-                            echo "No upstream merge requested\n";
-                        }
-                    }
 
-                } else {
-                    $this->error('git repo does not exist in '.base_path().'/workbench/'.$name);
-                }
-            } else {
-                $this->error('No Git Upstream Set');
-            }
+    public function mergeRemote($merge){
+        if($merge){
+            $this->exec('git merge '.$merge);
         } else {
-            $this->error('No Git Repo Set');
+            echo "No remote merge requested\n";
         }
     }
 
-    public function verifyUpstream($name){
+    public function fetchRemotes($name,array $remotes){
+        foreach($remotes as $remoteName=>$location){
+            $this->getRemote($name,$remoteName,$location);
+        }
+    }
+    public function getRemote($name,$remoteName,$location){
+        echo "get git $name :: $remoteName\n";
+        if(!empty($location)){
+            //$this->call('command:name', array('argument' => 'foo', '--option' => 'bar'));
+            chdir(base_path().'/workbench/'.$name);
+            if(is_dir('.git')){
+                if(!$this->verifyRemote($name,$remoteName)){
+                    $this->exec('git remote add '.$remoteName.' '.$location);
+                }
+                if($this->verifyRemote($name,$remoteName)){
+                    $this->exec('git fetch '.$remoteName);
+                }
+            } else {
+                $this->error('git repo does not exist in '.base_path().'/workbench/'.$name);
+            }
+        } else {
+            $this->error('No Git Remote Set');
+        }
+    }
+
+    public function verifyUpstream($name,$remoteName){
         chdir(base_path().'/workbench/'.$name);
 
         $str = shell_exec('git remote -v');
-        return (strpos($str,'upstream')!==false);
+        return (strpos($str,$remoteName)!==false);
     }
 
     // http://stackoverflow.com/questions/1281140/run-process-with-realtime-output-in-php

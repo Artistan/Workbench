@@ -7,7 +7,10 @@ return array(
     'packages'=>[
         'vendor/package'=>[
             'git'=>'git@github.com:vendor/devPackage.git',
-            'upstream'=>'git@github.com:vendor/masterPackage.git',
+            'remotes'=>[
+                'upstream'=>'git@github.com:vendor/masterPackage.git',
+                'upstream2'=>'git@github.com:vendor/masterPackage.git',
+            ]
         ],
     ]
 );

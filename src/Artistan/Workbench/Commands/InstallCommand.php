@@ -60,9 +60,12 @@ class InstallCommand extends Command {
             if(isset($package['git'])){
                 $this->benchhelper->mkdir($name);
                 $action = $this->benchhelper->getGit($name,$package);
-                if($this->option('upstream')){
-                    echo "upstream\n";
-                    $this->benchhelper->getUpstream($name,$package,$this->option('merge'));
+                if($this->option('remote')){
+                    echo "remotes\n";
+                    $this->benchhelper->fetchRemotes($name,$package['remotes']);
+                }
+                if($this->option('merge')){
+                    $this->benchhelper->mergeRemote($this->option('merge'));
                 }
                 if(!$this->option('skipBower')){
                     $this->benchhelper->bower($name);
