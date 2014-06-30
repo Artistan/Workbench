@@ -90,6 +90,7 @@ class InstallCommand extends Command {
             // remove any packages from vendors directory that you are workbenching
             $this->benchhelper->composerVendorCleanup(array_keys($packages));
         }
+        $this->info( "do not forget to register your providers!" );
     }
 
     /**

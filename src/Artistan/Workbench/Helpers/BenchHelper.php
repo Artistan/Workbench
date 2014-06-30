@@ -102,7 +102,7 @@ class BenchHelper {
                 if(file_exists('./bower.json')){
                     echo shell_exec('bower install');
                 } else {
-                    echo "No bower.json to install";
+                    $this->cmd->error( "No bower.json to install" );
                 }
             } else {
                 $this->error('Package does not exist');
