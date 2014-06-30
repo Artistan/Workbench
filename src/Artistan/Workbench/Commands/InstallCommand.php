@@ -37,7 +37,7 @@ class InstallCommand extends Command {
     public function __construct()
     {
         parent::__construct();
-        $this->benchhelper = new BenchHelper();
+        $this->benchhelper = new BenchHelper($this);
     }
 
     /**
@@ -56,12 +56,11 @@ class InstallCommand extends Command {
             }
         }
         foreach($packages as $name=>$package){
-            echo "PACKAGE: $name\n";
+            $this->info( "PACKAGE: $name" );
             if(isset($package['git'])){
-                $this->benchhelper->mkdir($name);
                 $action = $this->benchhelper->getGit($name,$package);
                 if($this->option('remote')){
-                    echo "remotes\n";
+                    $this->info( "remotes" );
                     $this->benchhelper->fetchRemotes($name,$package['remotes']);
                 }
                 if($this->option('merge')){
@@ -78,10 +77,10 @@ class InstallCommand extends Command {
                 }
                 if($this->option('publishConfigs') || $action=='install'){
                     // this should not be done all the time, first time only (install)
-                    $this->call('config:publish', array('argument' => $name, '--path' => 'workbench/'.$name.'/src/config'));
+                    $this->call('config:publish', array('package' => $name, '--path' => 'workbench/'.$name.'/src/config'));
                 }
             }
-            echo "============================\n\n\n";
+            $this->info( "============================" );
         }
         if(!$this->option('skipBower')){
             $this->benchhelper->bower();
@@ -91,7 +90,6 @@ class InstallCommand extends Command {
             // remove any packages from vendors directory that you are workbenching
             $this->benchhelper->composerVendorCleanup(array_keys($packages));
         }
-        //$this->call('command:name', array('argument' => 'foo', '--option' => 'bar'));
     }
 
     /**
@@ -115,7 +113,7 @@ class InstallCommand extends Command {
     {
         return array(
             array('destroy','d', InputOption::VALUE_NONE, 'Destroy current packages.'),
-            array('upstream','u', InputOption::VALUE_NONE, 'Fetch upstream.'),
+            array('remote','r', InputOption::VALUE_NONE, 'Fetch upstream.'),
             array('merge','m', InputOption::VALUE_OPTIONAL, 'Merge upstream into this branch.'),
             array('skipComposer','c', InputOption::VALUE_NONE, 'skip composer install/update'),
             array('skipBower','b', InputOption::VALUE_NONE, 'skip bower install/update'),

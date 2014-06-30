@@ -2,15 +2,29 @@
 namespace Artistan\Workbench\Helpers;
 
 class BenchHelper {
+
+
+    /**
+     * The console command object.
+     *
+     * @var InstallCommand
+     */
+    protected $cmd = false;
+
+    public function __construct(&$command){
+        $this->cmd = $command;
+    }
     /**
      * destroys all workbench packages
      */
     public function destroy($packages) {
-        echo "removing all configured packages\n";
+        $this->cmd->info( "removing all configured packages" );
         foreach($packages as $name){
             // check if exists, also do not remove artistan/workbench cause I am working on it!!!
-            if(is_dir(base_path().'/workbench/'.$name) && $name!='artistan/workbench'){
-                $this->exec('rm -rf '.base_path().'/workbench/'.$name);
+            while( is_dir( base_path().'/workbench/'.$name) && $name!='artistan/workbench' ){
+                $path = explode('/',$name);
+                $this->exec( 'rm -rf '.base_path().'/workbench/'.$path[0] );
+                clearstatcache ( true, base_path().'/workbench/'.$name );
             }
         }
     }
@@ -26,12 +40,13 @@ class BenchHelper {
      * @throws Exception
      */
     public function mkdir($name) {
-        echo "make dir $name\n";
+        $this->cmd->info( "make dir $name" );
         if(!empty($name)){
-            //$this->call('command:name', array('argument' => 'foo', '--option' => 'bar'));
             if(is_dir(base_path().'/workbench/'.$name)){
+                $this->cmd->error( "dir $name exists" );exit;
                 return true;
             } else {
+                $this->cmd->error( "dir $name make" );
                 return mkdir(base_path().'/workbench/'.$name,0777,true);
             }
         } else {
@@ -45,7 +60,7 @@ class BenchHelper {
      * @throws Exception
      */
     public function composer($name='',$action='') {
-        echo "composer $name\n";
+        $this->cmd->info( "composer $name" );
         if(!empty($name) && !empty($action)){
             if(is_dir(base_path().'/workbench/'.$name)){
                 chdir(base_path().'/workbench/'.$name);
@@ -67,7 +82,7 @@ class BenchHelper {
      * @param $packages
      */
     public function composerVendorCleanup($packages) {
-        echo "composerVendorCleanup\n";
+        $this->cmd->info( "composerVendorCleanup" );
         foreach($packages as $name){
             if(is_dir(base_path().'/vendor/'.$name)){
                 $this->exec('rm -rf '.base_path().'/vendor/'.$name);
@@ -80,7 +95,7 @@ class BenchHelper {
      * @throws Exception
      */
     public function bower($name='') {
-        echo "bower $name\n";
+        $this->cmd->info( "bower $name" );
         if(!empty($name)){
             if(is_dir(base_path().'/workbench/'.$name)){
                 chdir(base_path().'/workbench/'.$name);
@@ -106,9 +121,9 @@ class BenchHelper {
      * @throws Exception
      */
     public function getGit($name,array $package) {
-        echo "get git $name\n";
+        $this->cmd->info( "get git $name" );
         if(!empty($package['git'])){
-            //$this->call('command:name', array('argument' => 'foo', '--option' => 'bar'));
+            $this->mkdir($name);
             chdir(base_path().'/workbench/'.$name);
             if(is_dir('.git')){
                 // just git pull
@@ -131,8 +146,8 @@ class BenchHelper {
     public function mergeRemote($merge){
         if($merge){
             $this->exec('git merge '.$merge);
-        } else {
-            echo "No remote merge requested\n";
+        } else {        
+            $this->error( "No remote merge requested" );       
         }
     }
 
@@ -142,9 +157,8 @@ class BenchHelper {
         }
     }
     public function getRemote($name,$remoteName,$location){
-        echo "get git $name :: $remoteName\n";
+        $this->cmd->info( "get git $name :: $remoteName" );
         if(!empty($location)){
-            //$this->call('command:name', array('argument' => 'foo', '--option' => 'bar'));
             chdir(base_path().'/workbench/'.$name);
             if(is_dir('.git')){
                 if(!$this->verifyRemote($name,$remoteName)){
@@ -161,7 +175,7 @@ class BenchHelper {
         }
     }
 
-    public function verifyUpstream($name,$remoteName){
+    public function verifyRemote($name,$remoteName){
         chdir(base_path().'/workbench/'.$name);
 
         $str = shell_exec('git remote -v');
@@ -170,10 +184,11 @@ class BenchHelper {
 
     // http://stackoverflow.com/questions/1281140/run-process-with-realtime-output-in-php
     /**
-     * @param string $cmd
+     * @param $cmd
+     * @param bool $echo
      */
     public function exec($cmd,$echo=true){
-        echo "Command: $cmd\n";
+        $this->cmd->info( "Command: $cmd" );
         if($echo){
             $descriptor_spec = array(
                 0 => array("pipe", "r"),   // stdin is a pipe that the child will read from
@@ -194,7 +209,7 @@ class BenchHelper {
     }
 
     public function error($message,$exit=false){
-        echo $message."\n";
+        $this->cmd->info( "$message" );
         if($exit){
             exit;
         }

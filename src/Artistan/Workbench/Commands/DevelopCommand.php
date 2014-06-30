@@ -37,7 +37,7 @@ class DevelopCommand extends Command {
     public function __construct()
     {
         parent::__construct();
-        $this->benchhelper = new BenchHelper();
+        $this->benchhelper = new BenchHelper($this);
     }
 
     /**
