@@ -34,7 +34,10 @@ Once you have published the configuration files, you can add your workbench pack
     'packages'=>[
         'vendor/package'=>[
             'git'=>'git@github.com:vendor/devPackage.git',
-            'upstream'=>'git@github.com:vendor/masterPackage.git',
+            'remotes'=>[
+                'upstream'=>'git@github.com:vendor/masterPackage.git',
+                'upstream2'=>'git@github.com:vendor/masterPackage.git',
+            ]
         ],
     ]
 
@@ -46,8 +49,8 @@ Command Line Interface
 
         OPTIONS:
             -d          : destroy workbench directory and start over from scratch
-            -u          : fetch the upstream repository
-            -m{string}  : merge upstream with this branch locally
+            -u          : fetch the remote repositories
+            -m{string}  : merge {remote name} with this branch locally
             -c          : skip composer install/update
             -b          : skip bower install
             -p          : skip publishing assets and configs

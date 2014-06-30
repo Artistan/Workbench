@@ -113,8 +113,8 @@ class InstallCommand extends Command {
     {
         return array(
             array('destroy','d', InputOption::VALUE_NONE, 'Destroy current packages.'),
-            array('remote','r', InputOption::VALUE_NONE, 'Fetch upstream.'),
-            array('merge','m', InputOption::VALUE_OPTIONAL, 'Merge upstream into this branch.'),
+            array('remote','r', InputOption::VALUE_NONE, 'fetch the remote repositories.'),
+            array('merge','m', InputOption::VALUE_OPTIONAL, 'Merge {remote name} into this branch.'),
             array('skipComposer','c', InputOption::VALUE_NONE, 'skip composer install/update'),
             array('skipBower','b', InputOption::VALUE_NONE, 'skip bower install/update'),
             array('skipAssets','a', InputOption::VALUE_NONE, 'skip publishing assets from workbench'),
