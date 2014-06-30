@@ -49,17 +49,18 @@ class InstallCommand extends Command {
     {
         $this->benchhelper->chStorage();
         $packages = \Config::get('workbench::packages');
+        $destroy = false;
         if($this->option('destroy')){
             if($this->confirm('Are you sure you want to remove all configured workbench packages? [yes|no]'))
             {
-                $this->benchhelper->destroy(array_keys($packages));
+                $destroy=true;
             }
         }
         foreach($packages as $name=>$package){
             $this->info( "PACKAGE: $name" );
             if(isset($package['git'])){
-                $action = $this->benchhelper->getGit($name,$package);
-                if($this->option('remote')){
+                $action = $this->benchhelper->getGit($name,$package,$destroy);
+                if( $this->option('remote') && !empty($package['remotes']) && is_array($package['remotes']) ){
                     $this->info( "remotes" );
                     $this->benchhelper->fetchRemotes($name,$package['remotes']);
                 }

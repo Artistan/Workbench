@@ -17,15 +17,11 @@ class BenchHelper {
     /**
      * destroys all workbench packages
      */
-    public function destroy($packages) {
-        $this->cmd->info( "removing all configured packages" );
-        foreach($packages as $name){
-            // check if exists, also do not remove artistan/workbench cause I am working on it!!!
-            while( is_dir( base_path().'/workbench/'.$name) && $name!='artistan/workbench' ){
-                $path = explode('/',$name);
-                $this->exec( 'rm -rf '.base_path().'/workbench/'.$path[0] );
-                clearstatcache ( true, base_path().'/workbench/'.$name );
-            }
+    public function destroy($name) {
+        // check if exists, also do not remove artistan/workbench cause I am working on it!!!
+        while( is_dir( base_path().'/workbench/'.$name) && $name!='artistan/workbench' ){
+            $this->exec( 'rm -rf '.base_path().'/workbench/'.$name );
+            clearstatcache ( true, base_path().'/workbench/'.$name );
         }
     }
 
@@ -116,11 +112,14 @@ class BenchHelper {
     /**
      * @param $name
      * @param array $package
-     *      array( 'git'=>'' [,'upstream'=>''] )
+     *      array( 'git'=>'' )
+     * @param $destroy
      * @return string
-     * @throws Exception
      */
-    public function getGit($name,array $package) {
+    public function getGit($name,array $package,$destroy) {
+        if($destroy){
+            $this->destroy($name);
+        }
         $this->cmd->info( "get git $name" );
         if(!empty($package['git'])){
             $this->mkdir($name);
