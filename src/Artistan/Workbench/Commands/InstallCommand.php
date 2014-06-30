@@ -61,9 +61,6 @@ class InstallCommand extends Command {
             $this->info( "PACKAGE: $name" );
             if(isset($package['git'])){
                 $action = $this->benchhelper->getGit($name,$package['git'],$destroy);
-                if(count($packageNames) > 0){
-                    $this->benchhelper->clearPackageVendors($name,$packageNames);
-                }
                 if( $this->option('remote') && !empty($package['remotes']) && is_array($package['remotes']) ){
                     $this->info( "remotes" );
                     $this->benchhelper->fetchRemotes($name,$package['remotes']);
@@ -75,7 +72,7 @@ class InstallCommand extends Command {
                     $this->benchhelper->bower($name);
                 }
                 if(!$this->option('skipComposer')){
-                    $this->benchhelper->composer($name,$action);
+                    $this->benchhelper->composer($name,$action,$packageNames);
                 }
                 if(!$this->option('skipAssets')){
                     $this->call('asset:publish', array('--bench' => $name));

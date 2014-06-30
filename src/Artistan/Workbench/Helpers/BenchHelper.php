@@ -51,16 +51,19 @@ class BenchHelper {
     }
 
     /**
-     * @param $name
-     * @param $action
-     * @throws Exception
+     * @param string $name
+     * @param string $action
+     * @param array $packageNames
      */
-    public function composer($name='',$action='') {
+    public function composer($name='',$action='',$packageNames=[]) {
         $this->cmd->info( "composer $name" );
         if(!empty($name) && !empty($action)){
             if(is_dir(base_path().'/workbench/'.$name)){
                 chdir(base_path().'/workbench/'.$name);
                 echo shell_exec('composer '.$action.' --no-dev');
+                if(count($packageNames)>1){
+                    $this->benchhelper->clearPackageVendors($name,$packageNames);
+                }
                 echo shell_exec('composer dump-autoload');
             } else {
                 $this->error('Package does not exist');
