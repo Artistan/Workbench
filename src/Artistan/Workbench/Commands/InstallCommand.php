@@ -49,6 +49,7 @@ class InstallCommand extends Command {
     {
         $this->benchhelper->chStorage();
         $packages = \Config::get('workbench::packages');
+        $packageNames = array_keys($packages);
         $destroy = false;
         if($this->option('destroy')){
             if($this->confirm('Are you sure you want to remove all configured workbench packages? [yes|no]'))
@@ -59,7 +60,10 @@ class InstallCommand extends Command {
         foreach($packages as $name=>$package){
             $this->info( "PACKAGE: $name" );
             if(isset($package['git'])){
-                $action = $this->benchhelper->getGit($name,$package,$destroy);
+                $action = $this->benchhelper->getGit($name,$package['git'],$destroy);
+                if(count($packageNames) > 0){
+                    $this->benchhelper->clearPackageVendors($name,$packageNames);
+                }
                 if( $this->option('remote') && !empty($package['remotes']) && is_array($package['remotes']) ){
                     $this->info( "remotes" );
                     $this->benchhelper->fetchRemotes($name,$package['remotes']);
@@ -89,7 +93,7 @@ class InstallCommand extends Command {
         if(!$this->option('skipComposer')){
             $this->benchhelper->composer();
             // remove any packages from vendors directory that you are workbenching
-            $this->benchhelper->composerVendorCleanup(array_keys($packages));
+            $this->benchhelper->composerVendorCleanup($packageNames);
         }
         $this->info( "do not forget to register your providers!" );
     }

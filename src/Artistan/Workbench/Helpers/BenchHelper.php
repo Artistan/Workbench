@@ -39,7 +39,7 @@ class BenchHelper {
         $this->cmd->info( "make dir $name" );
         if(!empty($name)){
             if(is_dir(base_path().'/workbench/'.$name)){
-                $this->cmd->error( "dir $name exists" );exit;
+                $this->cmd->error( "dir $name exists" );
                 return true;
             } else {
                 $this->cmd->error( "dir $name make" );
@@ -69,6 +69,21 @@ class BenchHelper {
             chdir(base_path());
             echo shell_exec('composer dump-autoload');
             echo shell_exec('php artisan dump-autoload');
+        }
+    }
+
+    /**
+     * do not want to be working on package that is installed via composer.
+     *
+     * @param $package
+     * @param $packages
+     */
+    public function clearPackageVendors($package,$packages) {
+        $this->cmd->info( "composerVendorCleanup" );
+        foreach($packages as $name){
+            if(is_dir(base_path().'/workbench/'.$package.'/vendor/'.$name)){
+                $this->exec('rm -rf '.base_path().'/workbench/'.$package.'/vendor/'.$name);
+            }
         }
     }
 
@@ -111,17 +126,16 @@ class BenchHelper {
 
     /**
      * @param $name
-     * @param array $package
-     *      array( 'git'=>'' )
+     * @param $packageName
      * @param $destroy
      * @return string
      */
-    public function getGit($name,array $package,$destroy) {
+    public function getGit($name,$packageName,$destroy) {
         if($destroy){
             $this->destroy($name);
         }
         $this->cmd->info( "get git $name" );
-        if(!empty($package['git'])){
+        if(!empty($packageName)){
             $this->mkdir($name);
             chdir(base_path().'/workbench/'.$name);
             if(is_dir('.git')){
@@ -130,7 +144,7 @@ class BenchHelper {
                 return 'update';
             } else {
                 // git clone
-                $this->exec('git clone '.$package['git'].' .');
+                $this->exec("git clone $packageName .");
                 if(!is_dir('.git')){
                     $this->error('getGit Failed to get git');
                 }
