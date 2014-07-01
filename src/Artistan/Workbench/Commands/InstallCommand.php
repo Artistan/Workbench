@@ -72,7 +72,7 @@ class InstallCommand extends Command {
                     $this->benchhelper->bower($name);
                 }
                 if(!$this->option('skipComposer')){
-                    $this->benchhelper->composer($name,$action,$packageNames);
+                    $this->benchhelper->composer($packageNames,$name,$action);
                 }
                 if(!$this->option('skipAssets')){
                     $this->call('asset:publish', array('--bench' => $name));
@@ -88,9 +88,7 @@ class InstallCommand extends Command {
             $this->benchhelper->bower();
         }
         if(!$this->option('skipComposer')){
-            $this->benchhelper->composer();
-            // remove any packages from vendors directory that you are workbenching
-            $this->benchhelper->composerVendorCleanup($packageNames);
+            $this->benchhelper->composer($packageNames);
         }
         $this->info( "do not forget to register your providers!" );
     }

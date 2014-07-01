@@ -51,11 +51,11 @@ class BenchHelper {
     }
 
     /**
+     * @param array $packageNames
      * @param string $name
      * @param string $action
-     * @param array $packageNames
      */
-    public function composer($name='',$action='',$packageNames=[]) {
+    public function composer($packageNames=[],$name='',$action='') {
         $this->cmd->info( "composer $name" );
         if(!empty($name) && !empty($action)){
             if(is_dir(base_path().'/workbench/'.$name)){
@@ -70,6 +70,10 @@ class BenchHelper {
             }
         } else {
             chdir(base_path());
+            echo shell_exec('composer '.$action.' --no-dev');
+            // remove any packages from vendors directory that you are workbenching
+            $this->composerVendorCleanup($packageNames);
+            // redo dumpautoload cache..
             echo shell_exec('composer dump-autoload');
             echo shell_exec('php artisan dump-autoload');
         }
