@@ -62,7 +62,7 @@ class BenchHelper {
                 chdir(base_path().'/workbench/'.$name);
                 echo shell_exec('composer '.$action.' --no-dev');
                 if(count($packageNames)>1){
-                    $this->benchhelper->clearPackageVendors($name,$packageNames);
+                    $this->clearPackageVendors($name,$packageNames);
                 }
                 echo shell_exec('composer dump-autoload');
             } else {
