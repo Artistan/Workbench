@@ -70,7 +70,11 @@ class BenchHelper {
             }
         } else {
             chdir(base_path());
-            echo shell_exec('composer '.$action.' --no-dev');
+            //avoid outputting composer help when just wanting to dump autoload
+            if(!empty($action))
+            {
+                echo shell_exec('composer '.$action.' --no-dev');
+            }
             // remove any packages from vendors directory that you are workbenching
             $this->composerVendorCleanup($packageNames);
             // redo dumpautoload cache..
