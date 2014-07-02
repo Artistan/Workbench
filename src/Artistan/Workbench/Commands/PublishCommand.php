@@ -6,21 +6,21 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class DevelopCommand extends Command {
+class PublishCommand extends Command {
 
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'workbench:develop';
+    protected $name = 'workbench:publish';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Setup dev for artistan/workbench.';
+    protected $description = 'Install the currently configured packages from artistan/workspace config.';
 
     /**
      * workbench helper class
@@ -47,18 +47,22 @@ class DevelopCommand extends Command {
      */
     public function fire()
     {
-        // setup for development of this package
-        echo "This will assist Artistan/Workbench development by composer dump and such\n please pass -c to publish config. do not edit this config unless adding features.\n\n";
-
-        // publish config to package configs...
-        if($this->option('publishConfig')){
-            $this->benchhelper->exec('php artisan config:publish --path="workbench/artistan/workbench/src/config" artistan/workbench');
-            echo "update configs in app/config/packages/artistan/workbench/config.php\n";
+        $this->benchhelper->chStorage();
+        $packages = \Config::get('workbench::packages');
+        foreach($packages as $name=>$package){
+            $this->info( "PACKAGE: $name" );
+            if(isset($package['git'])){
+                if(!$this->option('skipAssets')){
+                    $this->call('asset:publish', array('--bench' => $name));
+                }
+                if($this->option('publishConfigs')){
+                    // this should not be done all the time, first time only (install)
+                    $this->call('config:publish', array('package' => $name, '--path' => 'workbench/'.$name.'/src/config'));
+                }
+            }
+            $this->info( "============================" );
         }
-        $this->benchhelper->composerVendorCleanup(['artistan/workbench']);
-
-        $this->benchhelper->composer('artistan/workbench','update');
-        $this->benchhelper->composer();
+        $this->info( "publishing complete!" );
     }
 
     /**
@@ -81,7 +85,8 @@ class DevelopCommand extends Command {
     protected function getOptions()
     {
         return array(
-            array('publishConfig','c', InputOption::VALUE_NONE, 'Publish the config file.'),
+            array('skipAssets','a', InputOption::VALUE_NONE, 'skip publishing assets from workbench'),
+            array('publishConfigs','i', InputOption::VALUE_NONE, 're-publish the config files'),
         );
     }
 

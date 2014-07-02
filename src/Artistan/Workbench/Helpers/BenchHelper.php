@@ -132,17 +132,19 @@ class BenchHelper {
     }
 
     /**
+     * get git repo into current working directory
+     *
      * @param $name
-     * @param $packageName
+     * @param $repo
      * @param $destroy
      * @return string
      */
-    public function getGit($name,$packageName,$destroy) {
+    public function getGit($name,$repo,$destroy) {
         if($destroy){
             $this->destroy($name);
         }
         $this->cmd->info( "get git $name" );
-        if(!empty($packageName)){
+        if(!empty($repo)){
             $this->mkdir($name);
             chdir(base_path().'/workbench/'.$name);
             if(is_dir('.git')){
@@ -151,7 +153,7 @@ class BenchHelper {
                 return 'update';
             } else {
                 // git clone
-                $this->exec("git clone $packageName .");
+                $this->exec("git clone $repo .");
                 if(!is_dir('.git')){
                     $this->error('getGit Failed to get git');
                 }
@@ -160,6 +162,59 @@ class BenchHelper {
         } else {
             $this->error('No Git Repo Set');
         }
+        return false;
+    }
+
+    /**
+     * get git repo into current working directory
+     * branch to new name
+     *
+     * @param $name
+     * @param $repo git repo location
+     * @param $newBranch
+     * @param $fromBranch
+     * @param $destroy
+     * @return string
+     */
+    public function branchGit($name,$repo,$newBranch,$fromBranch='master',$destroy=false) {
+        $this->cmd->info( "get git $name" );
+        $gitState = $this->getGit($name,$repo,$destroy);
+        if($gitState){
+            if(is_dir('.git')){
+                $this->exec("git checkout $fromBranch");
+                if($fromBranch == $newBranch){
+                    $this->error("git from and new are the same!");
+                } else {
+                    $this->exec("git checkout -b $newBranch");
+                }
+                $gitState = 'install';
+            } else {
+                $this->error("no git repo to branch from");
+            }
+        } else {
+            $this->error('getGit Failed');
+        }
+        return $gitState;
+    }
+
+    /**
+     * checkout branch
+     *
+     * @param $name
+     * @param $branch
+     * @return string
+     */
+    public function checkoutGit($name,$branch) {
+        $this->cmd->info( "$name checkout git $branch" );
+        chdir(base_path().'/workbench/'.$name);
+        if(is_dir('.git')){
+            // just git pull
+            $this->exec("git checkout $branch");
+            return 'checkout';
+        } else {
+            $this->error("no git repo to checkout from");
+        }
+        return false;
     }
 
 
