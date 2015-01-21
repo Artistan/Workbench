@@ -7,7 +7,9 @@ adds configurable workbench management commands to laravel
 
 Include the artistan workbench package as a dependency in your `composer.json` [Packagist](https://packagist.org/packages/artistan/workbench):
 
-    "artistan/workbench": "*"
+    "require-dev": {
+        "artistan/workbench": "*"
+    },
 
 ### Installation
 
